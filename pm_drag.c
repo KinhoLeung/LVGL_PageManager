@@ -15,8 +15,6 @@ static void pm_root_get_drag_predict(lv_coord_t* x, lv_coord_t* y)
     *x = xp; *y = yp;
 }
 
-static bool pm_get_current_anim_attr(pm_manager_t* m, pm_load_anim_attr_t* out);
-
 static void pm_on_root_drag_anim_finish(lv_anim_t* a)
 {
     pm_manager_t* m = (pm_manager_t*)lv_anim_get_user_data(a);
@@ -29,7 +27,7 @@ static void pm_on_root_drag_anim_finish(lv_anim_t* a)
 static void pm_on_root_async_leave(void* data)
 {
     pm_page_t* base = (pm_page_t*)data;
-    lv_event_send(base->root, LV_EVENT_LEAVE, base);
+    lv_obj_send_event(base->root, LV_EVENT_LEAVE, base);
 }
 
 static void pm_on_root_drag_event(lv_event_t* event)
@@ -87,5 +85,3 @@ void pm_root_enable_drag(pm_manager_t* m, lv_obj_t* root)
     pm_page_t* base = (pm_page_t*)lv_obj_get_user_data(root);
     lv_obj_add_event_cb(root, pm_on_root_drag_event, LV_EVENT_ALL, base);
 }
-
-

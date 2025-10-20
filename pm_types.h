@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
 #if defined(__has_include)
 #if __has_include("lvgl.h")
 #include "lvgl.h"
@@ -82,6 +81,16 @@ void *lv_anim_get_user_data(lv_anim_t *a);
 #endif
 #else
 #include "lvgl/lvgl.h"
+#endif
+
+/* Map legacy lv_mem_* API to LVGL v9 lv_* API when LVGL is available */
+#if defined(LVGL_VERSION_MAJOR) && (LVGL_VERSION_MAJOR >= 9)
+#ifndef lv_mem_alloc
+#define lv_mem_alloc lv_malloc
+#endif
+#ifndef lv_mem_free
+#define lv_mem_free lv_free
+#endif
 #endif
 
 /* stdint/stdbool already included above */

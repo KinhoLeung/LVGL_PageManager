@@ -4,7 +4,6 @@
 #include "pm_log.h"
 
 /* Forward declarations of internal helpers implemented in other modules */
-static bool pm_switch_anim_state_check(pm_manager_t* m);
 bool pm_switch_to(pm_manager_t* m, pm_page_t* new_page, bool is_enter, const pm_stash_t* stash);
 pm_page_t* pm_find_in_pool(pm_manager_t* m, const char* name);
 pm_page_t* pm_find_in_stack(pm_manager_t* m, const char* name);
@@ -64,5 +63,3 @@ bool pm_manager_back_home(pm_manager_t* m)
     pm_page_t* home = pm_stack_top(m);
     return pm_switch_to(m, home, false, 0);
 }
-
-

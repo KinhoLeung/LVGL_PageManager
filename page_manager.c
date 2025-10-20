@@ -42,19 +42,31 @@ pm_manager_t* pm_manager_create(const pm_factory_t* factory)
 void pm_manager_destroy(pm_manager_t* m)
 {
     if (!m) return;
+
     /* Clear stack without animations */
     while (kv_size(m->stack)) {
         pm_page_t* top = pm_stack_top(m);
         kv_pop(m->stack);
-        (void)top;
+        if (top) {
+            top->priv.IsCached = false;
+            top->priv.State = PM_PAGE_STATE_UNLOAD;
+            pm_state_update(m, top);
+        }
     }
+
     /* Free pool entries if factory destroy provided */
     for (size_t i = 0; i < kv_size(m->pool); ++i) {
         pm_page_t* p = kv_A(m->pool, i);
         if (!p) continue;
+        if (p->root) {
+            p->priv.IsCached = false;
+            p->priv.State = PM_PAGE_STATE_UNLOAD;
+            pm_state_update(m, p);
+        }
         if (m->factory && m->factory->destroy) m->factory->destroy(p, m->factory->user);
         else pm_page_destroy(p);
     }
+
     kv_destroy(m->pool);
     kv_destroy(m->stack);
     lv_mem_free(m);
@@ -118,16 +130,19 @@ bool pm_manager_uninstall(pm_manager_t* m, const char* app_name)
     pm_page_t* page = pm_find_in_pool(m, app_name);
     if (!page) return false;
     if (!pm_manager_unregister(m, app_name)) return false;
-    if (page->priv.IsCached) {
+
+    if (page->priv.IsCached || page->root) {
         /* caller must ensure not active; lifecycle handled in state module */
+        page->priv.IsCached = false;
         page->priv.State = PM_PAGE_STATE_UNLOAD;
+        pm_state_update(m, page);
     }
     if (m->factory && m->factory->destroy) m->factory->destroy(page, m->factory->user);
     else pm_page_destroy(page);
     return true;
 }
 
-const char* pm_manager_get_prev_name(pm_manager_t* m)
+const char* pm_manager_get_prev_name(const pm_manager_t* m)
 {
     static const char* empty = "EMPTY_PAGE";
     return (m && m->prev && m->prev->name) ? m->prev->name : empty;

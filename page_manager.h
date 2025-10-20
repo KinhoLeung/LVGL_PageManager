@@ -25,7 +25,7 @@ extern "C"
     bool pm_manager_push(pm_manager_t *, const char *name, const pm_stash_t *stash /*nullable*/);
     bool pm_manager_pop(pm_manager_t *);
     bool pm_manager_back_home(pm_manager_t *);
-    const char *pm_manager_get_prev_name(pm_manager_t *);
+    const char *pm_manager_get_prev_name(const pm_manager_t *);
 
     void pm_manager_set_global_load_anim(pm_manager_t *, uint8_t anim, uint16_t time, lv_anim_path_cb_t path);
     void pm_manager_set_root_default_style(pm_manager_t *, lv_style_t *style);

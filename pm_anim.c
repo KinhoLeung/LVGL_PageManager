@@ -105,7 +105,7 @@ void pm_anim_default_init(pm_manager_t* m, lv_anim_t* a)
     lv_anim_init(a);
     uint32_t time = (as_mgr(m)->anim.Current.Type == PM_LOAD_ANIM_NONE) ? 0u : as_mgr(m)->anim.Current.Time;
     lv_anim_set_time(a, time);
-    lv_anim_set_path_cb(a, as_mgr(m)->anim.Current.Path);
+    lv_anim_set_path_cb(a, as_mgr(m)->anim.Current.Path ? as_mgr(m)->anim.Current.Path : lv_anim_path_ease_out);
 }
 
 /* Switch animation orchestration */
@@ -148,5 +148,3 @@ void pm_switch_anim_create(pm_manager_t* m, pm_page_t* base)
     lv_anim_start(&a);
     base->priv.Anim.IsBusy = true;
 }
-
-
