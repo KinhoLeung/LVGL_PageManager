@@ -1,4 +1,4 @@
-[中文](README.zh.md) | [English](README.en.md)
+[中文](README_zh.md) | [English](README.en.md)
 
 # LVGL PageManager (C)
 
