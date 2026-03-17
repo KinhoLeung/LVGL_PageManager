@@ -10,9 +10,6 @@ static int32_t getter_y(void* obj){ return (int32_t)lv_obj_get_y((lv_obj_t*)obj)
 static void setter_opa(void* obj, int32_t v){ lv_obj_set_style_bg_opa((lv_obj_t*)obj, (lv_opa_t)v, LV_PART_MAIN); }
 static int32_t getter_opa(void* obj){ return (int32_t)lv_obj_get_style_bg_opa((lv_obj_t*)obj, LV_PART_MAIN); }
 
-/* Manager internals */
-struct pm_manager;
-static struct pm_manager* as_mgr(pm_manager_t* m){ return (struct pm_manager*)m; }
 
 bool pm_get_is_over_anim(pm_manager_t* m, uint8_t anim)
 {
@@ -103,9 +100,9 @@ bool pm_anim_get_attr(uint8_t anim, pm_load_anim_attr_t* attr)
 void pm_anim_default_init(pm_manager_t* m, lv_anim_t* a)
 {
     lv_anim_init(a);
-    uint32_t time = (as_mgr(m)->anim.Current.Type == PM_LOAD_ANIM_NONE) ? 0u : as_mgr(m)->anim.Current.Time;
+    uint32_t time = (m->anim.Current.Type == PM_LOAD_ANIM_NONE) ? 0u : m->anim.Current.Time;
     lv_anim_set_time(a, time);
-    lv_anim_set_path_cb(a, as_mgr(m)->anim.Current.Path ? as_mgr(m)->anim.Current.Path : lv_anim_path_ease_out);
+    lv_anim_set_path_cb(a, m->anim.Current.Path ? m->anim.Current.Path : lv_anim_path_ease_out);
 }
 
 /* Switch animation orchestration */
@@ -116,13 +113,12 @@ static void pm_on_switch_anim_finish(lv_anim_t* a)
     extern void pm_state_update(pm_manager_t*, pm_page_t*);
     pm_state_update(m, base);
     base->priv.Anim.IsBusy = false;
-    /* check finished */
-    bool last_busy = (base->manager->prev && base->manager->prev->priv.Anim.IsBusy);
+    bool last_busy = (m->prev && m->prev->priv.Anim.IsBusy);
     if (!base->priv.Anim.IsBusy && !last_busy) {
-        as_mgr(m)->anim.IsSwitchReq = false;
-        as_mgr(m)->prev = as_mgr(m)->current;
-        if (!as_mgr(m)->anim.IsEntering) {
-            as_mgr(m)->anim.Current = as_mgr(m)->anim.Global;
+        m->anim.IsSwitchReq = false;
+        m->prev = m->current;
+        if (!m->anim.IsEntering) {
+            m->anim.Current = m->anim.Global;
         }
     }
 }
@@ -130,7 +126,7 @@ static void pm_on_switch_anim_finish(lv_anim_t* a)
 void pm_switch_anim_create(pm_manager_t* m, pm_page_t* base)
 {
     pm_load_anim_attr_t attr;
-    if (!pm_anim_get_attr(as_mgr(m)->anim.Current.Type, &attr)) return;
+    if (!pm_anim_get_attr(m->anim.Current.Type, &attr)) return;
     lv_anim_t a;
     pm_anim_default_init(m, &a);
     lv_anim_set_user_data(&a, base);
@@ -138,7 +134,7 @@ void pm_switch_anim_create(pm_manager_t* m, pm_page_t* base)
     lv_anim_set_ready_cb(&a, pm_on_switch_anim_finish);
     lv_anim_set_exec_cb(&a, attr.setter);
     int32_t start = attr.getter ? attr.getter(base->root) : 0;
-    if (as_mgr(m)->anim.IsEntering) {
+    if (m->anim.IsEntering) {
         if (base->priv.Anim.IsEnter) lv_anim_set_values(&a, attr.push.enter.start, attr.push.enter.end);
         else lv_anim_set_values(&a, start, attr.push.exit.end);
     } else {

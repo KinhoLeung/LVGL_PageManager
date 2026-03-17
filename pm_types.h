@@ -13,7 +13,6 @@
 #elif __has_include("lvgl/lvgl.h")
 #include "lvgl/lvgl.h"
 #else
-/* Minimal fallbacks for linting when LVGL headers are unavailable */
 #include <stddef.h>
 /* Basic LVGL type stubs */
 typedef struct _lv_obj_t lv_obj_t;
@@ -44,40 +43,40 @@ typedef void (*lv_anim_path_cb_t)(const lv_anim_t *, int32_t *);
 #define LV_OBJ_FLAG_SCROLLABLE (1u << 0)
 #define LV_OBJ_FLAG_HIDDEN (1u << 1)
 
-/* Function prototypes (stubs) to satisfy the compiler when LVGL isn't present) */
-void *lv_mem_alloc(size_t size);
-void lv_mem_free(void *p);
-lv_obj_t *lv_obj_create(lv_obj_t *parent);
-lv_obj_t *lv_scr_act(void);
-void lv_obj_clear_flag(lv_obj_t *obj, uint32_t flag);
-void lv_obj_add_flag(lv_obj_t *obj, uint32_t flag);
-void lv_obj_set_user_data(lv_obj_t *obj, void *user);
-void *lv_obj_get_user_data(lv_obj_t *obj);
-void lv_obj_add_style(lv_obj_t *obj, const lv_style_t *style, uint32_t sel);
-void lv_obj_move_foreground(lv_obj_t *obj);
-void lv_obj_del_async(lv_obj_t *obj);
-void lv_event_send(lv_obj_t *obj, int32_t code, void *param);
-void lv_obj_add_event_cb(lv_obj_t *obj, void (*cb)(lv_event_t *), int32_t filter, void *user_data);
-int32_t lv_obj_get_x(lv_obj_t *obj);
-void lv_obj_set_x(lv_obj_t *obj, int32_t x);
-int32_t lv_obj_get_y(lv_obj_t *obj);
-void lv_obj_set_y(lv_obj_t *obj, int32_t y);
-lv_opa_t lv_obj_get_style_bg_opa(lv_obj_t *obj, uint32_t part);
-void lv_obj_set_style_bg_opa(lv_obj_t *obj, lv_opa_t opa, uint32_t part);
-lv_indev_t *lv_indev_get_act(void);
-void lv_indev_get_vect(lv_indev_t *indev, lv_point_t *point);
-void lv_async_call(void (*cb)(void *), void *user_data);
-void lv_anim_init(lv_anim_t *a);
-void lv_anim_set_time(lv_anim_t *a, uint32_t time);
-void lv_anim_set_path_cb(lv_anim_t *a, lv_anim_path_cb_t path);
-void lv_anim_set_user_data(lv_anim_t *a, void *user_data);
-void lv_anim_set_var(lv_anim_t *a, void *var);
-void lv_anim_set_ready_cb(lv_anim_t *a, void (*cb)(lv_anim_t *));
-void lv_anim_set_exec_cb(lv_anim_t *a, void (*cb)(void *, int32_t));
-void lv_anim_set_values(lv_anim_t *a, int32_t start, int32_t end);
-void lv_anim_start(lv_anim_t *a);
-void lv_anim_del(void *var, void (*exec_cb)(void *, int32_t));
-void *lv_anim_get_user_data(lv_anim_t *a);
+static inline void *lv_mem_alloc(size_t size) { (void)size; return (void*)0; }
+static inline void lv_mem_free(void *p) { (void)p; }
+static inline lv_obj_t *lv_obj_create(lv_obj_t *parent) { (void)parent; return (lv_obj_t*)0; }
+static inline lv_obj_t *lv_scr_act(void) { return (lv_obj_t*)0; }
+static inline void lv_obj_clear_flag(lv_obj_t *obj, uint32_t flag) { (void)obj; (void)flag; }
+static inline void lv_obj_add_flag(lv_obj_t *obj, uint32_t flag) { (void)obj; (void)flag; }
+static inline void lv_obj_set_user_data(lv_obj_t *obj, void *user) { (void)obj; (void)user; }
+static inline void *lv_obj_get_user_data(lv_obj_t *obj) { (void)obj; return (void*)0; }
+static inline void lv_obj_add_style(lv_obj_t *obj, const lv_style_t *style, uint32_t sel) { (void)obj; (void)style; (void)sel; }
+static inline void lv_obj_move_foreground(lv_obj_t *obj) { (void)obj; }
+static inline void lv_obj_del_async(lv_obj_t *obj) { (void)obj; }
+static inline void lv_event_send(lv_obj_t *obj, int32_t code, void *param) { (void)obj; (void)code; (void)param; }
+static inline void lv_obj_add_event_cb(lv_obj_t *obj, void (*cb)(lv_event_t *), int32_t filter, void *user_data) { (void)obj; (void)cb; (void)filter; (void)user_data; }
+static inline int32_t lv_obj_get_x(lv_obj_t *obj) { (void)obj; return 0; }
+static inline void lv_obj_set_x(lv_obj_t *obj, int32_t x) { (void)obj; (void)x; }
+static inline int32_t lv_obj_get_y(lv_obj_t *obj) { (void)obj; return 0; }
+static inline void lv_obj_set_y(lv_obj_t *obj, int32_t y) { (void)obj; (void)y; }
+static inline lv_opa_t lv_obj_get_style_bg_opa(lv_obj_t *obj, uint32_t part) { (void)obj; (void)part; return 0; }
+static inline void lv_obj_set_style_bg_opa(lv_obj_t *obj, lv_opa_t opa, uint32_t part) { (void)obj; (void)opa; (void)part; }
+static inline lv_indev_t *lv_indev_get_act(void) { return (lv_indev_t*)0; }
+static inline void lv_indev_get_vect(lv_indev_t *indev, lv_point_t *point) { (void)indev; if (point) { point->x = 0; point->y = 0; } }
+static inline void lv_async_call(void (*cb)(void *), void *user_data) { (void)cb; (void)user_data; }
+static inline void lv_anim_init(lv_anim_t *a) { (void)a; }
+static inline void lv_anim_set_time(lv_anim_t *a, uint32_t time) { (void)a; (void)time; }
+static inline void lv_anim_set_path_cb(lv_anim_t *a, lv_anim_path_cb_t path) { (void)a; (void)path; }
+static inline void lv_anim_set_user_data(lv_anim_t *a, void *user_data) { (void)a; (void)user_data; }
+static inline void lv_anim_set_var(lv_anim_t *a, void *var) { (void)a; (void)var; }
+static inline void lv_anim_set_ready_cb(lv_anim_t *a, void (*cb)(lv_anim_t *)) { (void)a; (void)cb; }
+static inline void lv_anim_set_exec_cb(lv_anim_t *a, void (*cb)(void *, int32_t)) { (void)a; (void)cb; }
+static inline void lv_anim_set_values(lv_anim_t *a, int32_t start, int32_t end) { (void)a; (void)start; (void)end; }
+static inline void lv_anim_start(lv_anim_t *a) { (void)a; }
+static inline void lv_anim_del(void *var, void (*exec_cb)(void *, int32_t)) { (void)var; (void)exec_cb; }
+static inline void *lv_anim_get_user_data(lv_anim_t *a) { (void)a; return (void*)0; }
+
 #endif
 #else
 #include "lvgl/lvgl.h"

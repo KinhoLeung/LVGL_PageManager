@@ -10,8 +10,8 @@ static void pm_root_get_drag_predict(lv_coord_t* x, lv_coord_t* y)
     lv_point_t vect;
     lv_indev_get_vect(indev, &vect);
     lv_coord_t yp = 0, xp = 0;
-    while (vect.y != 0) { yp += vect.y; vect.y = vect.y * (100 - PM_INDEV_DEF_DRAG_THROW) / 100; }
-    while (vect.x != 0) { xp += vect.x; vect.x = vect.x * (100 - PM_INDEV_DEF_DRAG_THROW) / 100; }
+    while (vect.y != 0) { yp += vect.y; vect.y = (lv_coord_t)(vect.y * (100 - PM_INDEV_DEF_DRAG_THROW) / 100); }
+    while (vect.x != 0) { xp += vect.x; vect.x = (lv_coord_t)(vect.x * (100 - PM_INDEV_DEF_DRAG_THROW) / 100); }
     *x = xp; *y = yp;
 }
 
@@ -27,6 +27,7 @@ static void pm_on_root_drag_anim_finish(lv_anim_t* a)
 static void pm_on_root_async_leave(void* data)
 {
     pm_page_t* base = (pm_page_t*)data;
+    // lv_event_send(base->root, LV_EVENT_LEAVE, base);
     lv_obj_send_event(base->root, LV_EVENT_LEAVE, base);
 }
 
@@ -48,7 +49,7 @@ static void pm_on_root_drag_event(lv_event_t* event)
         ((struct pm_manager*)m)->anim.IsBusy = false;
         extern pm_page_t* pm_stack_top_after(struct pm_manager*);
         pm_page_t* bottom = pm_stack_top_after((struct pm_manager*)m);
-        lv_obj_clear_flag(bottom->root, LV_OBJ_FLAG_HIDDEN);
+        if (bottom && bottom->root) lv_obj_clear_flag(bottom->root, LV_OBJ_FLAG_HIDDEN);
     } else if (code == LV_EVENT_PRESSING) {
         lv_coord_t cur = attr.getter(root);
         lv_coord_t max = (attr.pop.exit.start > attr.pop.exit.end) ? attr.pop.exit.start : attr.pop.exit.end;

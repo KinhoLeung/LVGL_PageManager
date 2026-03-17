@@ -98,39 +98,42 @@ static pm_page_state_t pm_state_unload(pm_manager_t* m, pm_page_t* base)
     return PM_PAGE_STATE_IDLE;
 }
 
-/* Exposed entry to drive state machine */
 void pm_state_update(pm_manager_t* m, pm_page_t* base)
 {
     if (!m || !base) return;
-    switch (base->priv.State) {
-    case PM_PAGE_STATE_IDLE:
-        break;
-    case PM_PAGE_STATE_LOAD:
-        base->priv.State = pm_state_load(m, base);
-        pm_state_update(m, base);
-        break;
-    case PM_PAGE_STATE_WILL_APPEAR:
-        base->priv.State = pm_state_will_appear(m, base);
-        break;
-    case PM_PAGE_STATE_DID_APPEAR:
-        base->priv.State = pm_state_did_appear(m, base);
-        break;
-    case PM_PAGE_STATE_ACTIVITY:
-        base->priv.State = PM_PAGE_STATE_WILL_DISAPPEAR;
-        pm_state_update(m, base);
-        break;
-    case PM_PAGE_STATE_WILL_DISAPPEAR:
-        base->priv.State = pm_state_will_disappear(m, base);
-        break;
-    case PM_PAGE_STATE_DID_DISAPPEAR:
-        base->priv.State = pm_state_did_disappear(m, base);
-        if (base->priv.State == PM_PAGE_STATE_UNLOAD) pm_state_update(m, base);
-        break;
-    case PM_PAGE_STATE_UNLOAD:
-        base->priv.State = pm_state_unload(m, base);
-        break;
-    default:
-        break;
+    bool running = true;
+    while (running) {
+        running = false;
+        switch (base->priv.State) {
+        case PM_PAGE_STATE_IDLE:
+            break;
+        case PM_PAGE_STATE_LOAD:
+            base->priv.State = pm_state_load(m, base);
+            running = true;
+            break;
+        case PM_PAGE_STATE_WILL_APPEAR:
+            base->priv.State = pm_state_will_appear(m, base);
+            break;
+        case PM_PAGE_STATE_DID_APPEAR:
+            base->priv.State = pm_state_did_appear(m, base);
+            break;
+        case PM_PAGE_STATE_ACTIVITY:
+            base->priv.State = PM_PAGE_STATE_WILL_DISAPPEAR;
+            running = true;
+            break;
+        case PM_PAGE_STATE_WILL_DISAPPEAR:
+            base->priv.State = pm_state_will_disappear(m, base);
+            break;
+        case PM_PAGE_STATE_DID_DISAPPEAR:
+            base->priv.State = pm_state_did_disappear(m, base);
+            if (base->priv.State == PM_PAGE_STATE_UNLOAD) running = true;
+            break;
+        case PM_PAGE_STATE_UNLOAD:
+            base->priv.State = pm_state_unload(m, base);
+            break;
+        default:
+            break;
+        }
     }
 }
 

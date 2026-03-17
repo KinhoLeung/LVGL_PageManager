@@ -51,6 +51,7 @@ bool pm_manager_pop(pm_manager_t* m)
     if (!top->priv.IsDisableAutoCache) top->priv.IsCached = false;
     pm_stack_pop(m);
     top = pm_stack_top(m);
+    if (!top) return false;
     return pm_switch_to(m, top, false, 0);
 }
 

@@ -49,6 +49,11 @@ bool pm_switch_to(pm_manager_t* m, pm_page_t* new_page, bool is_enter, const pm_
             buffer = lv_mem_alloc(stash->size);
         } else if (new_page->priv.Stash.size == stash->size) {
             buffer = new_page->priv.Stash.ptr;
+        } else {
+            lv_mem_free(new_page->priv.Stash.ptr);
+            new_page->priv.Stash.ptr = 0;
+            new_page->priv.Stash.size = 0;
+            buffer = lv_mem_alloc(stash->size);
         }
         if (buffer) {
             memcpy(buffer, stash->ptr, stash->size);
@@ -72,13 +77,11 @@ bool pm_switch_to(pm_manager_t* m, pm_page_t* new_page, bool is_enter, const pm_
     pm_state_update(m, im->current);
 
     if (im->anim.IsEntering) {
-        if (im->prev) lv_obj_move_foreground(im->prev->root);
-        lv_obj_move_foreground(im->current->root);
+        if (im->prev && im->prev->root) lv_obj_move_foreground(im->prev->root);
+        if (im->current->root) lv_obj_move_foreground(im->current->root);
     } else {
-        lv_obj_move_foreground(im->current->root);
-        if (im->prev) lv_obj_move_foreground(im->prev->root);
+        if (im->current->root) lv_obj_move_foreground(im->current->root);
+        if (im->prev && im->prev->root) lv_obj_move_foreground(im->prev->root);
     }
     return true;
 }
-
-
