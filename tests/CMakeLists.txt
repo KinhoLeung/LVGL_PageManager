@@ -1,0 +1,33 @@
+cmake_minimum_required(VERSION 3.16)
+project(lvgl_page_manager_tests LANGUAGES C CXX)
+enable_testing()
+
+# Use an official LVGL 9 checkout. Keeping it external makes the component
+# usable offline and avoids bundling a second LVGL into an application.
+set(LVGL_DIR "" CACHE PATH "Path to an LVGL 9 source checkout")
+if(NOT EXISTS "${LVGL_DIR}/lvgl.h")
+    message(FATAL_ERROR "Set -DLVGL_DIR=/absolute/path/to/lvgl-9.x")
+endif()
+set(LV_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h" CACHE STRING "" FORCE)
+set(LV_BUILD_CONF_PATH "${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h" CACHE PATH "" FORCE)
+set(LV_CONF_BUILD_DISABLE_EXAMPLES ON CACHE BOOL "" FORCE)
+set(LV_CONF_BUILD_DISABLE_DEMOS ON CACHE BOOL "" FORCE)
+set(LV_CONF_BUILD_DISABLE_THORVG_INTERNAL ON CACHE BOOL "" FORCE)
+set(LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_BUILD_DEMOS OFF CACHE BOOL "" FORCE)
+set(CONFIG_LV_USE_THORVG_INTERNAL OFF CACHE BOOL "" FORCE)
+add_subdirectory("${LVGL_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/lvgl")
+add_subdirectory(.. "${CMAKE_CURRENT_BINARY_DIR}/page_manager")
+
+add_executable(page_manager_tests test_page_manager.c ../examples/page_manager_example.c)
+target_link_libraries(page_manager_tests PRIVATE lvgl_page_manager)
+target_compile_features(page_manager_tests PRIVATE c_std_99)
+set_target_properties(page_manager_tests PROPERTIES
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS OFF)
+if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(lvgl_page_manager PRIVATE -Wall -Wextra -Werror -pedantic)
+    target_compile_options(page_manager_tests PRIVATE -Wall -Wextra -Werror -pedantic)
+endif()
+add_test(NAME page_manager_integration COMMAND page_manager_tests)
